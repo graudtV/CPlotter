@@ -26,27 +26,36 @@ double anotherFunc(double x)
 
 int main()
 {
-	Plot plot = {};
-	printf("\033]2;BLA_BLA\007\n");
-	plotSetDefault(&plot);
 	system("clear");
-	//plotSetSize(&plot, 60, 10);
-	plotSetAxis(&plot, -10, 10, -1.3, 1.3);
-	plotSetFunction(&plot, someFunc);
-	plotSetChar(&plot, 'x');
-	plotSetTitle(&plot, "Hello, world! It's my graph");
-	plotDraw(&plot);
+	FILE *fout = fopen("result.txt", "w");
 
-	Plot plotCos = {};
-	plotSetDefault(&plotCos);
-	plotSetFunction(&plotCos, cos);
-	plotZoom(&plotCos, 1.5, 1);
-	plotDraw(&plotCos);
-	plotSetDefault(&plot);
-	plotSetFunction(&plot, sqrt);
-	plotSetAxis(&plot, -1, 10, -1, 3);
-	plotDraw(&plot);
+	Plot defaultPlot = {}, cosPlot = {}, sqrtPlot = {};
+	//1) default
+	plotSetDefault(&defaultPlot);
+	plotSetTitle(&defaultPlot, "Hello, world! I'm a graph");
+	//2) cos
+	plotCopy(&cosPlot, &defaultPlot);
+	plotSetFunction(&cosPlot, cos);
+	plotSetTitle(&cosPlot, "It is cos(x) plot");
+	//3) sqrt
+	plotCopy(&sqrtPlot, &defaultPlot);
+	plotSetFunction(&sqrtPlot, sqrt);
+	plotSetTitle(&sqrtPlot, "One more graph. It is sqrt.");
+	plotSetChar(&sqrtPlot, '\'');
+	plotSetAxis(&sqrtPlot, -0.5, 10, -0.5, 3);
 
+	plotDraw(&defaultPlot);
+	plotDraw(&cosPlot);
+	plotDraw(&sqrtPlot);
+
+	//Теперь запишем тоже самое в текстовый файл
+	plotSetFout(&defaultPlot, fout);
+	plotSetFout(&cosPlot, fout);
+	plotSetFout(&sqrtPlot, fout);
+
+	plotDraw(&defaultPlot);
+	plotDraw(&cosPlot);
+	plotDraw(&sqrtPlot);
 	// while (1)
 	// {
 	// 	system("clear");
@@ -57,6 +66,10 @@ int main()
 	// 	usleep(100000);
 	// }
 
+	plotDestroy(&defaultPlot);
+	plotDestroy(&cosPlot);
+	plotDestroy(&sqrtPlot);
 
+	//fclose(fout);
 	return 0;
 }

@@ -34,6 +34,11 @@ void plotSetTitle(Plot *plot, const char *title)
 	plot->title_ = strdup(title);
 }
 
+void plotSetFout(Plot *plot, FILE *fout)
+{
+	plot->fout_ = fout;
+}
+
 void plotDestroy(Plot *plot)
 {
 	plot->sx_ = 0;
@@ -49,7 +54,7 @@ void plotDestroy(Plot *plot)
 	plot->title_ = NULL;
 }
 
-void printInCenter(char *text, int rowLen) //Выравнивает текст 
+void fprintInCenter(FILE *fout, char *text, int rowLen) //Выравнивает текст 
 {
 	if (text == NULL)
 		return;
@@ -58,20 +63,27 @@ void printInCenter(char *text, int rowLen) //Выравнивает текст
 	{
 		int spaces = (rowLen - textLen) / 2;
 		for (int i = 0; i < spaces; ++i)
-			putchar(' ');
-		printf("%s\n", text);		
+			putc(' ', fout);
+		fprintf(fout, "%s\n", text);		
 	}
 	else
-	{
-		printf("%s\n", text);
+	{ //TODO: Доделать нормальный вывод строки в этом случае
+		fprintf(fout, "%s\n", text);
 	}
+}
 
+void printInCenter(char *text, int rowLen) //Выравнивает текст 
+{
+	fprintInCenter(stdout, text, rowLen);
 }
 
 void plotDraw(Plot *plot)
 {
-	printf("\n");
-	printInCenter(plot->title_, plot->sx_ + 2);
+	putc('\n', plot->fout_);
+	if (plot->fout_ == NULL)
+		printInCenter(plot->title_, plot->sx_ + 2);
+	else
+		fprintInCenter(plot->fout_, plot->title_, plot->sx_ + 2);
 	int *yValues = calloc(plot->sx_, sizeof(int));
 	//Заполняем yValues
 	for (int xGraph = 0; xGraph < plot->sx_; ++xGraph)
@@ -88,27 +100,28 @@ void plotDraw(Plot *plot)
 	int yNull = round((plot->sy_ * plot->yUp_) / (plot->yUp_ - plot->yDown_)); 
 
 	for (int i = -2; i < plot->sx_; ++i) //Верхняя рамка графика
-		printf("*");
-	printf("\n");
+		putc('*', plot->fout_);
+	putc('\n', plot->fout_);
 	for (int j = 0; j < plot->sy_; ++j)
 	{
-		printf("*");  //левая рамка графика
+		putc('*', plot->fout_);  //левая рамка графика
 		for (int i = 0; i < plot->sx_; ++i)
 			if (yValues[i] == j)
-				printf("%c", plot->ch_);
+				putc(plot->ch_, plot->fout_);
 			else if (i == xNull && j == yNull)
-				printf("0");
+				putc('0', plot->fout_);
 			else if (i == xNull)
-				printf("|");
+				putc('|', plot->fout_);
 			else if (j == yNull)
-				printf("-");
+				putc('-', plot->fout_);
 			else
-				printf(" ");
-		printf("*\n"); //правая рамка графика
+				putc(' ', plot->fout_);
+		putc('*', plot->fout_); //правая рамка графика
+		putc('\n', plot->fout_);
 	}
 	for (int i = -2; i < plot->sx_; ++i) //Нижняя рамка графика
-	printf("*");
-	printf("\n");	
+		putc('*', plot->fout_);
+	putc('\n', plot->fout_);	
 }
 
 void plotZoom(Plot *plot, double xZoom, double yZoom) //"Растягивает" (или сужает) график.
@@ -141,5 +154,18 @@ void plotSetDefault(Plot *plot)
 	char title[40] = "Graph № ";
 	char buffer[20] = "";
 	sprintf(buffer, "%ld", plot->plotId_);
-	plotSetTitle(plot, strcat(title, buffer));	
+	plotSetTitle(plot, strcat(title, buffer));
+	plot->fout_ = stdout;	
+}
+
+void plotCopy(Plot *dst, Plot *src)
+{
+	assert(dst != NULL);
+	assert(src != NULL);
+	*dst = *src; //Но это еще не все! title_ указывают на одну и ту же строку!
+	if (dst->title_ != NULL) //Если title_ не заполнен (нулевой), то все ок
+	{
+		dst->title_ = strdup(dst->title_); //title_ не нулевой -> создаем копию
+		assert(dst->title_ != NULL); //Удалось выделить место
+	}
 }
