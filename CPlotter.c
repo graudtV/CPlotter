@@ -17,7 +17,7 @@ void plotSetFunction(Plot *plot, double (*func)(double))
 {
 	plot->func_ = func;
 }
-void plotSetAxis(Plot *plot, double xLeft, double xRight, double yDown, double yUp)
+void plotSetAxes(Plot *plot, double xLeft, double xRight, double yDown, double yUp)
 {
 	plot->xLeft_ = xLeft;
 	plot->xRight_ = xRight;
@@ -29,9 +29,16 @@ void plotSetChar(Plot *plot, char ch)
 {
 	plot->ch_ = ch;
 }
+void plotSetBackGroundChar(Plot *plot, char ch)
+{
+	plot->backgroundCh_ = ch;
+}
 void plotSetTitle(Plot *plot, const char *title)
 {
-	plot->title_ = strdup(title);
+	if (title == NULL)
+		plot->title_ = NULL;
+	else
+		plot->title_ = strdup(title);
 }
 
 void plotSetFout(Plot *plot, FILE *fout)
@@ -79,6 +86,9 @@ void printInCenter(char *text, int rowLen) //Выравнивает текст
 
 void plotDraw(Plot *plot)
 {
+	assert(plot != NULL);
+	if (plot->backgroundCh_ == '\0')
+		plot->backgroundCh_ = ' ';
 	putc('\n', plot->fout_);
 	if (plot->fout_ == NULL)
 		printInCenter(plot->title_, plot->sx_ + 2);
@@ -93,8 +103,7 @@ void plotDraw(Plot *plot)
 		yValues[xGraph] = round((yReal - plot->yUp_) * (plot->sy_) / (plot->yDown_ - plot->yUp_));
 		//Результаты, выходящие за пределы графика, не рисуются автоматически
 	}
-	// for (int i = 0; i < plot->sx_; ++i) //DEBUG
-	// 	printf("%d ", yValues[i]);
+
 	//Координаты нуля в системе отсчета графика
 	int xNull = round((plot->sx_ * plot->xLeft_) / (plot->xLeft_ - plot->xRight_));
 	int yNull = round((plot->sy_ * plot->yUp_) / (plot->yUp_ - plot->yDown_)); 
@@ -115,7 +124,7 @@ void plotDraw(Plot *plot)
 			else if (j == yNull)
 				putc('-', plot->fout_);
 			else
-				putc(' ', plot->fout_);
+				putc(plot->backgroundCh_, plot->fout_);
 		putc('*', plot->fout_); //правая рамка графика
 		putc('\n', plot->fout_);
 	}
@@ -148,7 +157,7 @@ void plotSetDefault(Plot *plot)
 	if (plot->plotId_ == 0)
 		plot->plotId_ = ++nOfPlots;
 	plotAdjustToConsole(plot);
-	plotSetAxis(plot, -10, 10, -1.3, 1.3);
+	plotSetAxes(plot, -10, 10, -1.3, 1.3);
 	plotSetFunction(plot, sin);
 	plotSetChar(plot, 'x');
 	char title[40] = "Graph № ";
@@ -169,3 +178,10 @@ void plotCopy(Plot *dst, Plot *src)
 		assert(dst->title_ != NULL); //Удалось выделить место
 	}
 }
+
+// //Скорость xSpeed = dx / dt. - Изменение x, передаваемого функцию
+// //За одну реальную секунду
+// void plotSimulate(Plot *plot, double *xSpeed)
+// {
+	
+// }

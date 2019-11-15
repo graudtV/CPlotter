@@ -13,6 +13,7 @@ typedef struct
 
 	//extra data
 	long int plotId_;
+	char backgroundCh_; //Символ фона, по умолчанию - пробел
 } Plot;
 
 //Создание графика (по-умолчанию, по копии), удаление графика
@@ -23,19 +24,23 @@ void plotDestroy(Plot *plot);
 //Настройки графика
 void plotSetSize(Plot *plot, int sx, int sy);
 void plotSetFunction(Plot *plot, double (*func)(double));
-void plotSetAxis(Plot *plot, double xLeft, double xRight, double yDown, double yUp);
+void plotSetAxes(Plot *plot, double xLeft, double xRight, double yDown, double yUp);
 void plotSetChar(Plot *plot, char ch);
+void plotSetBackGroundChar(Plot *plot, char ch);
 void plotSetTitle(Plot *plot, const char *title);
 void plotSetFout(Plot *plot, FILE *fout);
-
-//Эти функции есть, но используются только внутри
-//void printInCenter(char *text, int rowLen); //Выравнивает текст 
-//void fprintInCenter(FILE *fout, char *text, int rowLen); //Выравнивает текст 
 
 //Отрисовка графика
 void plotDraw(Plot *plot);
 void plotZoom(Plot *plot, double xZoom, double yZoom); //"Растягивает" (или сужает) график.
 void plotAdjustToConsole(Plot *plot); //Подгоняет размер графика под размер окна консоли
+
+// //fun-functions
+// void plotStartSimulation(Plot *plot, double xSpeed);
+
+//Эти функции используются только внутри CPlotter.c
+//void printInCenter(char *text, int rowLen); //Выравнивает текст 
+//void fprintInCenter(FILE *fout, char *text, int rowLen); //Выравнивает текст 
 
 
 

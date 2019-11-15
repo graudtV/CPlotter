@@ -11,9 +11,7 @@ double funcNull(double x)
 }
 double someFunc(double x)
 {
-	static double bias = 0;
-	bias += 0.005;
-	return sin(x + bias);
+	return 1 / x;
 }
 
 double anotherFunc(double x)
@@ -21,6 +19,7 @@ double anotherFunc(double x)
 	static double bias = 0;
 	bias += 0.005;
 	return sin(x) * cos(x + bias);
+	//return x;
 }
 
 
@@ -32,6 +31,8 @@ int main()
 	Plot defaultPlot = {}, cosPlot = {}, sqrtPlot = {};
 	//1) default
 	plotSetDefault(&defaultPlot);
+	plotSetBackGroundChar(&defaultPlot, ' ');
+	plotSetChar(&defaultPlot, 'x');
 	plotSetTitle(&defaultPlot, "Hello, world! I'm a graph");
 	//2) cos
 	plotCopy(&cosPlot, &defaultPlot);
@@ -42,7 +43,7 @@ int main()
 	plotSetFunction(&sqrtPlot, sqrt);
 	plotSetTitle(&sqrtPlot, "One more graph. It is sqrt.");
 	plotSetChar(&sqrtPlot, '\'');
-	plotSetAxis(&sqrtPlot, -0.5, 10, -0.5, 3);
+	plotSetAxes(&sqrtPlot, -0.5, 10, -0.5, 3);
 
 	plotDraw(&defaultPlot);
 	plotDraw(&cosPlot);
@@ -56,13 +57,14 @@ int main()
 	plotDraw(&defaultPlot);
 	plotDraw(&cosPlot);
 	plotDraw(&sqrtPlot);
+
+	// plotSetFunction(&cosPlot, anotherFunc);
+	// plotSetFout(&cosPlot, stdout);
+	// plotDraw(&cosPlot);
 	// while (1)
 	// {
 	// 	system("clear");
-	// 	plotSetFunction(&plot, someFunc);
-	// 	plotDraw(&plot);
-	// 	plotSetFunction(&plot, anotherFunc);
-	// 	plotDraw(&plot);
+	// 	plotDraw(&cosPlot);
 	// 	usleep(100000);
 	// }
 
