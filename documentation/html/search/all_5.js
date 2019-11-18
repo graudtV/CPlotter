@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['plot_12',['Plot',['../struct_plot.html',1,'']]],
+  ['plotadjusttoconsole_13',['plotAdjustToConsole',['../_c_plotter_8c.html#aafd93351b16d334bb2444f7613599cd1',1,'plotAdjustToConsole(Plot *plot):&#160;CPlotter.c'],['../_c_plotter_8h.html#aafd93351b16d334bb2444f7613599cd1',1,'plotAdjustToConsole(Plot *plot):&#160;CPlotter.c']]],
+  ['plotcopy_14',['plotCopy',['../_c_plotter_8c.html#a5240ed9f7f30c114cf6c608d8469ded0',1,'plotCopy(Plot *dst, Plot *src):&#160;CPlotter.c'],['../_c_plotter_8h.html#a5240ed9f7f30c114cf6c608d8469ded0',1,'plotCopy(Plot *dst, Plot *src):&#160;CPlotter.c']]],
+  ['plotdestroy_15',['plotDestroy',['../_c_plotter_8c.html#aa8e1845ba15a81666d6486d43189aca5',1,'plotDestroy(Plot *plot):&#160;CPlotter.c'],['../_c_plotter_8h.html#aa8e1845ba15a81666d6486d43189aca5',1,'plotDestroy(Plot *plot):&#160;CPlotter.c']]],
+  ['plotdraw_16',['plotDraw',['../_c_plotter_8c.html#ad9df18bc0798f48fe5e362dca561bfad',1,'plotDraw(Plot *plot):&#160;CPlotter.c'],['../_c_plotter_8h.html#ad9df18bc0798f48fe5e362dca561bfad',1,'plotDraw(Plot *plot):&#160;CPlotter.c']]],
+  ['plotid_5f_17',['plotId_',['../struct_plot.html#a738226d5e468aaac6dfecd46951be6ee',1,'Plot']]],
+  ['plotsetaxes_18',['plotSetAxes',['../_c_plotter_8c.html#aecd322aa30c58aac937e90d78f679885',1,'plotSetAxes(Plot *plot, double xLeft, double xRight, double yDown, double yUp):&#160;CPlotter.c'],['../_c_plotter_8h.html#aecd322aa30c58aac937e90d78f679885',1,'plotSetAxes(Plot *plot, double xLeft, double xRight, double yDown, double yUp):&#160;CPlotter.c']]],
+  ['plotsetbackgroundchar_19',['plotSetBackGroundChar',['../_c_plotter_8c.html#ab3eb3af187d67d4811b443d96443c660',1,'plotSetBackGroundChar(Plot *plot, char ch):&#160;CPlotter.c'],['../_c_plotter_8h.html#ab3eb3af187d67d4811b443d96443c660',1,'plotSetBackGroundChar(Plot *plot, char ch):&#160;CPlotter.c']]],
+  ['plotsetchar_20',['plotSetChar',['../_c_plotter_8c.html#afd1846fd5320ecd054f16cd10aa69ecf',1,'plotSetChar(Plot *plot, char ch):&#160;CPlotter.c'],['../_c_plotter_8h.html#afd1846fd5320ecd054f16cd10aa69ecf',1,'plotSetChar(Plot *plot, char ch):&#160;CPlotter.c']]],
+  ['plotsetdefault_21',['plotSetDefault',['../_c_plotter_8c.html#a31f8883d263b40bd9cd0d574c0a76e98',1,'plotSetDefault(Plot *plot):&#160;CPlotter.c'],['../_c_plotter_8h.html#a31f8883d263b40bd9cd0d574c0a76e98',1,'plotSetDefault(Plot *plot):&#160;CPlotter.c']]],
+  ['plotsetfout_22',['plotSetFout',['../_c_plotter_8c.html#a193fe72713db25ee29b990316be8cb4f',1,'plotSetFout(Plot *plot, FILE *fout):&#160;CPlotter.c'],['../_c_plotter_8h.html#a193fe72713db25ee29b990316be8cb4f',1,'plotSetFout(Plot *plot, FILE *fout):&#160;CPlotter.c']]],
+  ['plotsetfunction_23',['plotSetFunction',['../_c_plotter_8c.html#a63b91f751058d01a72356709efd78912',1,'plotSetFunction(Plot *plot, double(*func)(double)):&#160;CPlotter.c'],['../_c_plotter_8h.html#a63b91f751058d01a72356709efd78912',1,'plotSetFunction(Plot *plot, double(*func)(double)):&#160;CPlotter.c']]],
+  ['plotsetsize_24',['plotSetSize',['../_c_plotter_8c.html#a55d35d7e5352d32c998fdac7479ed702',1,'plotSetSize(Plot *plot, int sx, int sy):&#160;CPlotter.c'],['../_c_plotter_8h.html#a55d35d7e5352d32c998fdac7479ed702',1,'plotSetSize(Plot *plot, int sx, int sy):&#160;CPlotter.c']]],
+  ['plotsettitle_25',['plotSetTitle',['../_c_plotter_8c.html#a0253b237930459ec82db39f1b96776cf',1,'plotSetTitle(Plot *plot, const char *title):&#160;CPlotter.c'],['../_c_plotter_8h.html#a0253b237930459ec82db39f1b96776cf',1,'plotSetTitle(Plot *plot, const char *title):&#160;CPlotter.c']]],
+  ['plotzoom_26',['plotZoom',['../_c_plotter_8c.html#af1e339b42c9b8bc9a6ac47d1c193aa13',1,'plotZoom(Plot *plot, double xZoom, double yZoom):&#160;CPlotter.c'],['../_c_plotter_8h.html#af1e339b42c9b8bc9a6ac47d1c193aa13',1,'plotZoom(Plot *plot, double xZoom, double yZoom):&#160;CPlotter.c']]],
+  ['printincenter_27',['printInCenter',['../_c_plotter_8c.html#aa1ca41d8b798770d99f75dd12397af99',1,'CPlotter.c']]]
+];
