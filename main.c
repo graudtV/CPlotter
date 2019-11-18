@@ -72,6 +72,6 @@ int main()
 	plotDestroy(&cosPlot);
 	plotDestroy(&sqrtPlot);
 
-	//fclose(fout);
+	fclose(fout);
 	return 0;
 }
