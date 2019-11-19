@@ -193,6 +193,12 @@ void plotSetFout(Plot *plot, FILE *fout)
  */
 void plotDraw(Plot *plot)
 {
+	//TODO: График отображается не очень точно,
+	// если начало координат попадает между "пикселями" консоли
+	// Получается слишком большая погрешность при отображении нуля левее или правее его реального положения.
+	// График, на самом деле проходящий через 0, может не проходить через 0 при его изображении
+	// Предполагаемый способ исправить - "смещать" график вдоль Ox и Oy, чтобы 0 приходился ровно на центр какой-то ячейки консоли.
+	// Однако из-за этого границы осей будут отличаться от реально назначенных пользователем	
 	assert(plot != NULL);
 	if (plot->backgroundCh_ == '\0')
 		plot->backgroundCh_ = ' ';
@@ -205,15 +211,15 @@ void plotDraw(Plot *plot)
 	//Заполняем yValues
 	for (int xGraph = 0; xGraph < plot->sx_; ++xGraph)
 	{
-		double xReal = xGraph * (plot->xRight_ - plot->xLeft_) / plot->sx_ + plot->xLeft_;
+		double xReal = (xGraph + 0.5) * (plot->xRight_ - plot->xLeft_) / plot->sx_ + plot->xLeft_;
 		double yReal = plot->func_(xReal);
-		yValues[xGraph] = round((yReal - plot->yUp_) * (plot->sy_) / (plot->yDown_ - plot->yUp_));
+		yValues[xGraph] = floor((yReal - plot->yUp_) * (plot->sy_) / (plot->yDown_ - plot->yUp_));
 		//Результаты, выходящие за пределы графика, не рисуются автоматически
 	}
 
 	//Координаты нуля в системе отсчета графика
-	int xNull = round((plot->sx_ * plot->xLeft_) / (plot->xLeft_ - plot->xRight_));
-	int yNull = round((plot->sy_ * plot->yUp_) / (plot->yUp_ - plot->yDown_)); 
+	int xNull = floor((plot->sx_ * plot->xLeft_) / (plot->xLeft_ - plot->xRight_));
+	int yNull = floor((plot->sy_ * plot->yUp_) / (plot->yUp_ - plot->yDown_)); 
 
 	for (int i = -2; i < plot->sx_; ++i) //Верхняя рамка графика
 		putc('*', plot->fout_);
