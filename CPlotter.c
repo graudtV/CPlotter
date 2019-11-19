@@ -111,6 +111,12 @@ void plotSetSize(Plot *plot, int sx, int sy)
 void plotSetFunction(Plot *plot, double (*func)(double))
 {
 	plot->func_ = func;
+	plot->curve_ = NULL;
+}
+void plotSetCurve(Plot *plot, Curve_t *curve)
+{
+	plot->func_ = NULL;
+	plot->curve_ = curve;
 }
 /*!
  * \brief Настраивает отображаемый участок графика
@@ -182,41 +188,29 @@ void plotSetFout(Plot *plot, FILE *fout)
 	plot->fout_ = fout;
 }
 
-
-/*!
- * \brief Отображает график
- *
- * Все настройки графика должны быть заранее заданы.
- * Если часть обязательных полей не определена, возможно неопределенное поведение
- * Поэтому рекомендуется использовать функцию plotSetDefault() сразу после
- *  создания объекта структуры Plot, чтобы избежать ошибок
- */
-void plotDraw(Plot *plot)
+static void _plotDrawFunction(Plot *plot)
 {
-	assert(plot != NULL);
-	if (plot->backgroundCh_ == '\0')
-		plot->backgroundCh_ = ' ';
-	putc('\n', plot->fout_);
-	if (plot->fout_ == NULL)
-		printInCenter(plot->title_, plot->sx_ + 2);
-	else
-		fprintInCenter(plot->fout_, plot->title_, plot->sx_ + 2);
+	//TODO: График отображается не очень точно,
+	// если начало координат попадает между "пикселями" консоли
+	// Получается слишком большая погрешность при отображении нуля левее или правее
+	// его реального положения. График, на самом деле проходящий через 0, может не проходить через 0 при его изображении
+	// Предполагаемый способ исправить - "смещать" график вдоль Ox и Oy, чтобы 0 приходился ровно на центр какой-то ячейки консоли.
+	// Однако из-за этого границы осей будут отличаться от реально назначенных пользователем
 	int *yValues = calloc(plot->sx_, sizeof(int));
 	//Заполняем yValues
 	for (int xGraph = 0; xGraph < plot->sx_; ++xGraph)
 	{
-		double xReal = xGraph * (plot->xRight_ - plot->xLeft_) / plot->sx_ + plot->xLeft_;
+		double xReal = (xGraph + 0.5) * (plot->xRight_ - plot->xLeft_) / plot->sx_ + plot->xLeft_;
 		double yReal = plot->func_(xReal);
-		yValues[xGraph] = round((yReal - plot->yUp_) * (plot->sy_) / (plot->yDown_ - plot->yUp_));
+		yValues[xGraph] = floor((yReal - plot->yUp_) * (plot->sy_) / (plot->yDown_ - plot->yUp_));
 		//Результаты, выходящие за пределы графика, не рисуются автоматически
 	}
 
 	//Координаты нуля в системе отсчета графика
-	int xNull = round((plot->sx_ * plot->xLeft_) / (plot->xLeft_ - plot->xRight_));
-	int yNull = round((plot->sy_ * plot->yUp_) / (plot->yUp_ - plot->yDown_)); 
+	int xNull = floor((plot->sx_ * plot->xLeft_) / (plot->xLeft_ - plot->xRight_));
+	int yNull = floor((plot->sy_ * plot->yUp_) / (plot->yUp_ - plot->yDown_)); 
 
-	for (int i = -2; i < plot->sx_; ++i) //Верхняя рамка графика
-		putc('*', plot->fout_);
+
 	putc('\n', plot->fout_);
 	for (int j = 0; j < plot->sy_; ++j)
 	{
@@ -235,10 +229,87 @@ void plotDraw(Plot *plot)
 		putc('*', plot->fout_); //правая рамка графика
 		putc('\n', plot->fout_);
 	}
+}
+int _isOnCurve(double x, double y, double dx, double dy, Curve_t *curve)
+{
+	//if ((curve(x + dx, y) * curve(x - dx, y) < 0 && curve(x, y + dy) * curve (x, y - dy) < 0))
+	if (curve(x + dx, y + dy) * curve(x + dx, y - dy) * curve(x - dx, y + dy) * curve(x - dx, y - dy) <= 0)
+		return 1;
+	else if (curve(x + dx, y + dy) * curve(x + dx, y - dy) <= 0 || curve(x + dx, y - dy) * curve(x - dx, y - dy) <= 0)
+		return 1;
+	return 0;
+}
+static void _plotDrawCurve(Plot *plot)
+{
+	//Координаты нуля в системе отсчета графика
+	int xNull = floor((plot->sx_ * plot->xLeft_) / (plot->xLeft_ - plot->xRight_));
+	int yNull = floor((plot->sy_ * plot->yUp_) / (plot->yUp_ - plot->yDown_)); 
+
+	for (int j = 0; j < plot->sy_; ++j)
+	{
+		putc('*', plot->fout_);  //левая рамка графика
+		for (int i = 0; i < plot->sx_; ++i)
+		{
+			double xReal = (i + 0.5) * (plot->xRight_ - plot->xLeft_) / plot->sx_ + plot->xLeft_;
+			double yReal = (j + 0.5) * (plot->yDown_ - plot->yUp_) / plot->sy_ + plot->yUp_;
+			double pixelRealSizeX = (plot->xRight_ - plot->xLeft_) / plot->sx_;
+			double pixelRealSizeY = (plot->yUp_ - plot->yDown_) / plot->sy_;
+			
+			if (_isOnCurve(xReal, yReal, pixelRealSizeX / 2, pixelRealSizeY / 2, plot->curve_))
+			//if (fabs(plot->curve_(xReal, yReal)) < 0.1) //Точка лежит на графике
+				putc(plot->ch_, plot->fout_);
+			else if (i == xNull && j == yNull)
+				putc('0', plot->fout_);
+			else if (i == xNull)
+				putc('|', plot->fout_);
+			else if (j == yNull)
+				putc('-', plot->fout_);
+			else
+				putc(plot->backgroundCh_, plot->fout_);
+		}
+		putc('*', plot->fout_); //правая рамка графика
+		putc('\n', plot->fout_);		
+	}
+}
+
+/*!
+ * \brief Отображает график
+ *
+ * Все настройки графика должны быть заранее заданы.
+ * Если часть обязательных полей не определена, возможно неопределенное поведение
+ * Поэтому рекомендуется использовать функцию plotSetDefault() сразу после
+ *  создания объекта структуры Plot, чтобы избежать ошибок
+ */
+void plotDraw(Plot *plot)
+{
+	//Некоторое проверки правильности plot
+	assert(plot != NULL);
+	if (plot->func_ == NULL && plot->curve_ == NULL)
+	{
+		printf("ERROR. CPlotter: nothing to draw. Func or curve not set\n");
+		return;
+	}
+	if (plot->backgroundCh_ == '\0') //Если поле не заполнено, то ставим символ по умолчанию - пробел
+		plot->backgroundCh_ = ' ';
+
+	//Отображение графика
+	putc('\n', plot->fout_);
+	//Печать заголовка
+	fprintInCenter((plot->fout_ == NULL) ? stdout : plot->fout_, plot->title_, plot->sx_ + 2);
+
+	for (int i = -2; i < plot->sx_; ++i) //Верхняя рамка графика
+		putc('*', plot->fout_);
+
+	if (plot->func_ != NULL) //Выбран режим отображения графика
+		_plotDrawFunction(plot);
+	else
+		_plotDrawCurve(plot);
+
 	for (int i = -2; i < plot->sx_; ++i) //Нижняя рамка графика
 		putc('*', plot->fout_);
 	putc('\n', plot->fout_);	
 }
+
 
 /*!
  * \brief Уменьшает или увеличивает масштаб графика

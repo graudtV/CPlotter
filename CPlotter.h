@@ -2,6 +2,17 @@
 #define CPLOTTER
 
 #include <stdio.h>
+
+/*!
+ * \brief Тип данных кривой на плоскости, заданной неявно
+ * 
+ * Кривая задается уравнением f(x, y) = 0;
+ * Функция типа Curve_t принимает параметры x, y, подставляет их в левую часть
+ *  уравнения кривой (т.е. рассчитывает f(x, y)) и возвращает результат.
+ * По возвращаемому значению можно судить, лежит ли точки на кривой или нет
+ */
+typedef double Curve_t (double x, double y);
+
 /*!
  * \brief Структура с настройками графика
  */
@@ -10,6 +21,7 @@ typedef struct
 	int sx_, sy_; //!< Количество пикселей на графике по осям x, y
 	double xLeft_, xRight_, yDown_, yUp_; //!< Границы отображения графика (Отображаемые участки по осям)
 	double (*func_)(double); //!< Указатель на изображаемую функцию
+	Curve_t *curve_; //!< Указатель на изображаемую кривую (линию)
 	char ch_; //!< Символ отображения точек графика
 	char *title_; //!< Название графика
 	FILE *fout_; //!< Файл для вывода графика
@@ -27,6 +39,7 @@ void plotDestroy(Plot *plot);
 //Настройки графика
 void plotSetSize(Plot *plot, int sx, int sy);
 void plotSetFunction(Plot *plot, double (*func)(double));
+void plotSetCurve(Plot *plot, Curve_t *curve);
 void plotSetAxes(Plot *plot, double xLeft, double xRight, double yDown, double yUp);
 void plotSetChar(Plot *plot, char ch);
 void plotSetBackGroundChar(Plot *plot, char ch);

@@ -22,6 +22,11 @@ double anotherFunc(double x)
 	//return x;
 }
 
+double circle(double x, double y)
+{
+	return x * x + y * y - 1;
+	return x * x  - y * y - 1;
+}
 
 int main()
 {
