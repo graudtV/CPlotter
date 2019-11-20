@@ -45,6 +45,7 @@ int main()
 	plotSetChar(&sqrtPlot, '\'');
 	plotSetAxes(&sqrtPlot, -0.5, 10, -0.5, 3);
 
+	//Нарисует все в консоли
 	plotDraw(&defaultPlot);
 	plotDraw(&cosPlot);
 	plotDraw(&sqrtPlot);
@@ -54,6 +55,7 @@ int main()
 	plotSetFout(&cosPlot, fout);
 	plotSetFout(&sqrtPlot, fout);
 
+	//Нарисует все в текстовом файле
 	plotDraw(&defaultPlot);
 	plotDraw(&cosPlot);
 	plotDraw(&sqrtPlot);
